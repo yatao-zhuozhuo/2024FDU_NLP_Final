@@ -1,6 +1,5 @@
-from collections import defaultdict
+from collections import defaultdict, Counter
 import random
-from collections import Counter
 import torch
 from sklearn.cluster import KMeans
 import json
@@ -81,20 +80,17 @@ def count_items_in_groups(group_numbers: list[int]) -> dict[int, int]:
     return dict(group_counts)
 
 
-def sample_by_group(items: list[dict], group_numbers: list[int], samples_per_group: list[int]) -> list[list[dict]]:
+def sample_by_group(items, group_numbers: list[int], samples_per_group: list[int]):
     """
     Samples a specified number of items from each group. Ensures each group has enough items to sample.
 
     Args:
-        items (list[dict]): A list of QA pairs, where each item is a dictionary.
+        items: A list of QA pairs, where each item is a dictionary.
         group_numbers (list[int]): A list of group numbers corresponding to each item.
         samples_per_group (list[int]): A list specifying the number of samples to draw from each group.
 
     Returns:
-        list[list[dict]]: A list of lists, where each inner list contains the sampled items for the corresponding group.
-
-    Raises:
-        ValueError: If a group doesn't have enough items to sample.
+        A list of lists, where each inner list contains the sampled items for the corresponding group.
     """
     # Group items by their group numbers
     grouped_items = defaultdict(list)
@@ -111,12 +107,8 @@ def sample_by_group(items: list[dict], group_numbers: list[int], samples_per_gro
 
         group_items = grouped_items[group]
 
-        # Ensure the group has enough items to sample
-        if len(group_items) < sample_count:
-            raise ValueError(
-                f"Group {group} does not have enough items to sample. Available: {len(group_items)}, Requested: {sample_count}")
-
         # Randomly sample the required number of items
-        sampled_items.append(random.sample(group_items, sample_count))
+        sampled_items.append(random.sample(
+            group_items, min(sample_count, len(group_items))))
 
     return sampled_items
