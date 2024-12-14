@@ -17,3 +17,5 @@ def process_test_prompt(question, model_answer, gt_answer):
     Finally, provide a score in a bracket, like this: [90]
     
     '''
+
+    return prompt
